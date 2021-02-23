@@ -1,7 +1,7 @@
 {
   "name": "react-native-apple-map-kit-directions",
   "version": "0.1.0",
-  "description": " react-native-apple-map-kit-directions",
+  "description": "React Native wrapper to use MKDirections",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",

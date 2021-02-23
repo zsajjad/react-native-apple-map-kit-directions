@@ -1,19 +1,33 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import AppleMapKitDirections from 'react-native-apple-map-kit-directions';
 
+import AppleMapKitDirections, {
+  TRNMapKitResponse,
+} from 'react-native-apple-map-kit-directions';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [result, setResult] = React.useState<TRNMapKitResponse>();
 
   React.useEffect(() => {
-    AppleMapKitDirections.multiply(3, 7).then(setResult);
+    AppleMapKitDirections.getRouteDetail(
+      {
+        latitude: 37.3349,
+        longitude: -122.00902,
+      },
+      {
+        latitude: 37.327943,
+        longitude: -121.938195,
+      },
+      'car'
+    )
+      .then(setResult)
+      .catch((err) => console.warn(err));
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Result: {JSON.stringify(result)}</Text>
     </View>
   );
 }
