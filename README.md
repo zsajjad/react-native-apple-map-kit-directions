@@ -1,6 +1,6 @@
 # react-native-apple-map-kit-directions
 
- react-native-apple-map-kit-directions
+React Native wrapper to use MKDirections
 
 ## Installation
 
@@ -10,12 +10,22 @@ npm install react-native-apple-map-kit-directions
 
 ## Usage
 
-```js
+```tsx
 import AppleMapKitDirections from "react-native-apple-map-kit-directions";
 
 // ...
 
-const result = await AppleMapKitDirections.multiply(3, 7);
+const result: TRNMapKitResponse  = await AppleMapKitDirections.getRouteDetail(
+      {
+        latitude: 37.3349,
+        longitude: -122.00902,
+      },
+      {
+        latitude: 37.327943,
+        longitude: -121.938195,
+      },
+      'car' // 'car' | 'walk' | 'transit'
+    );
 ```
 
 ## Contributing
