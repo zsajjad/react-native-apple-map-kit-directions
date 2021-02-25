@@ -3,22 +3,26 @@ import MapKit
 @objc(AppleMapKitDirections)
 class AppleMapKitDirections: NSObject {
     @objc(getRouteDetail:toDestination:byTransitType:withResolver:withRejecter:)
-    func getRouteDetail(origin: NSDictionary,
-                        destination: NSDictionary,
+    func getRouteDetail(origin: Dictionary<String, Double>,
+                        destination: Dictionary<String, Double>,
                         transitType: NSString,
                         resolve:@escaping RCTPromiseResolveBlock,
                         reject:@escaping RCTPromiseRejectBlock) -> Void {
         
-        NSLog("%@", origin);
-        NSLog("%@", destination);
         let request = MKDirections.Request();
         
         request.source = MKMapItem(placemark:
                                     MKPlacemark(coordinate:
-                                                    CLLocationCoordinate2D(latitude: 37.334900, longitude: -122.009020), addressDictionary: nil))
+                                                    CLLocationCoordinate2D(
+                                                        latitude: origin["latitude"] ?? 0.0,
+                                                        longitude: origin["longitude"] ?? 0.0),
+                                                addressDictionary: nil))
         
         
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: 37.327943, longitude: -121.938195), addressDictionary: nil))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(
+                                                                latitude: destination["latitude"] ?? 0.0,
+                                                                longitude: destination["longitude"] ?? 0.0),
+                                                               addressDictionary: nil))
         
         request.requestsAlternateRoutes = true
         request.transportType = .any
@@ -41,7 +45,7 @@ class AppleMapKitDirections: NSObject {
         directions.calculate(completionHandler: {(response, error) in
             guard let response = response else {
                 if let error = error {
-                    print("Error: \(error)")
+                    reject("500", error.localizedDescription, error)
                 }
                 return
             }
