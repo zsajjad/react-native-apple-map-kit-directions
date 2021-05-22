@@ -41,7 +41,30 @@ class AppleMapKitDirections: NSObject {
         }
         
         let directions = MKDirections(request: request)
-        directions.calculateETA {(response, error) in
+        if (transitType == "transit") {
+            directions.calculateETA(completionHandler: { (response, error) in
+                guard let response = response else {
+                    if let error = error {
+                        reject("500", error.localizedDescription, error)
+                    }
+                    return
+                }
+                
+                var resp: Dictionary = [:] as [String : Any];
+                NSLog(response.debugDescription);
+                resp["distance"] = response.distance as Double;
+                resp["expectedTravelTime"] = response.expectedTravelTime as Double;
+                resp["name"] = response.transportType;
+                resp["advisoryNotices"] = response.expectedArrivalDate;
+                resp["expectedTravelTime"] = response.expectedTravelTime;
+                resp["expectedDepartureDate"] = response.expectedDepartureDate;
+                print(resp)
+                resolve(resp)
+            })
+
+            return;
+        }
+        directions.calculate(completionHandler: {(response, error) in
             guard let response = response else {
                 if let error = error {
                     reject("500", error.localizedDescription, error)
@@ -50,32 +73,16 @@ class AppleMapKitDirections: NSObject {
             }
             
             var resp: Dictionary = [:] as [String : Any];
-            
-            resp["distance"] = response.distance as Double;
-            resp["expectedTravelTime"] = response.expectedTravelTime as Double;
-            resp["name"] = response.transportType;
-            print(resp)
-            resolve(resp)
-        }
-//        directions.calculate(completionHandler: {(response, error) in
-//            guard let response = response else {
-//                if let error = error {
-//                    reject("500", error.localizedDescription, error)
-//                }
-//                return
-//            }
-//
-//            var resp: Dictionary = [:] as [String : Any];
-//
-//            if response.routes.count > 0 {
-//                let route = response.routes[0]
-//                resp["distance"] = route.distance as Double;
-//                resp["expectedTravelTime"] = route.expectedTravelTime as Double;
-//                resp["name"] = route.name;
-//                resp["advisoryNotices"] = route.advisoryNotices;
-//                print(resp)
-//                resolve(resp)
-//            }
-//        })
+            NSLog(response.debugDescription);
+            if response.routes.count > 0 {
+                let route = response.routes[0]
+                resp["distance"] = route.distance as Double;
+                resp["expectedTravelTime"] = route.expectedTravelTime as Double;
+                resp["name"] = route.name;
+                resp["advisoryNotices"] = route.advisoryNotices;
+                print(resp)
+                resolve(resp)
+            }
+        })
     }
 }
